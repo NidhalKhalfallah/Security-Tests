@@ -57,7 +57,9 @@ jobs:
     # If this step fails, then you should remove it and run the build manually (see below)
     - name: Autobuild
       run: |
+       cd ${{ github.workspace }}
        mkdir build
+       cd build
        cmake --build ./build --config Release
       #uses: github/codeql-action/autobuild@v2
 
