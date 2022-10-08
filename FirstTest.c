@@ -16,4 +16,5 @@ int main(int argc, char *argv[]) {
     sprintf(str_b, "%f", b);
     sprintf(str_c, "%f", c);
 
+    
 }
