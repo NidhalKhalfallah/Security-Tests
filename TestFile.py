@@ -1,13 +1,19 @@
-try {
-class ExampleProtocol(protocol.Protocol):
-def dataReceived(self, data):
+from django.conf.urls import url
+from django.db import connection
 
-def confirmAuth(self, headers):
-try:
-token = cPickle.loads(base64.b64decode(headers['AuthToken']))
-if not check_hmac(token['signature'], token['data'], getSecretKey()):
-raise AuthFail
-self.secure_data = token['data']
-except:
-raise AuthFail
-}
+
+def show_user(request, username):
+    with connection.cursor() as cursor:
+        # BAD -- Using string formatting
+        cursor.execute("SELECT * FROM users WHERE username = '%s'" % username)
+        user = cursor.fetchone()
+
+        # GOOD -- Using parameters
+        cursor.execute("SELECT * FROM users WHERE username = %s", username)
+        user = cursor.fetchone()
+
+        # BAD -- Manually quoting placeholder (%s)
+        cursor.execute("SELECT * FROM users WHERE username = '%s'", username)
+        user = cursor.fetchone()
+
+urlpatterns = [url(r'^users/(?P<username>[^/]+)$', show_user)]
