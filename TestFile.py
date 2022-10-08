@@ -7,18 +7,13 @@ import bcrypt
 
 app = Flask(__name__)
 
-
 def register():
    username = request.form['username']
    password = request.form['password']
    #hash the password
-   hash = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
-   #insert the new user into the database
-   db = MySQLdb.connect("localhost","cs3630","password","cs3630")
-   cursor = db.cursor()
-   cursor.execute('''INSERT INTO users VALUES (%s, %s, %s)''', (username, hash, "active"))
+   hash = bcrypt.hashpw(str.encode(password),bcrypt.gensalt())
+   #save username and hashed password to database
+   cursor.execute("INSERT into users (username, password, admin) VALUES (%s, %s, 0)", (username, hash))
    db.commit()
-   cursor.close()
-   db.close()
-   return redirect("http://web:5000/", code=302)
+   return redirect('/')
 
