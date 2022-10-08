@@ -12,23 +12,13 @@ def register():
    username = request.form['username']
    password = request.form['password']
    #hash the password
-   pw_hash = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt(14))
-   #connect to database
-   conn = MySQLdb.connect(host="localhost",
-       user="lz1599",
-       passwd="password",
-       db="cwe522_flask")
-   cursor = conn.cursor()
-
-   cursor.execute('INSERT into person VALUES (DEFAULT, %s, %s)', (username, pw_hash))
-   username = request.form['username']
-   password = request.form['password']
-   query = ("SELECT username FROM person")
-   cursor.execute(query)
-   isUser = cursor.fetchall()
-   reUsername = [row[0] for row in isUser]
-   if username in reUsername or password != pw_hash:
-       return "Please re-enter your information"
-   else:
-       return redirect("/")
+   hash = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt())
+   #insert the new user into the database
+   db = MySQLdb.connect("localhost","cs3630","password","cs3630")
+   cursor = db.cursor()
+   cursor.execute('''INSERT INTO users VALUES (%s, %s, %s)''', (username, hash, "active"))
+   db.commit()
+   cursor.close()
+   db.close()
+   return redirect("http://web:5000/", code=302)
 
